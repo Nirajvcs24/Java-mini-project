@@ -30,7 +30,6 @@ public class GameController {
     private int currentPlayerIndex = 0;
     private boolean gameRunning = false;
     
-    // UI Elements
     private VBox sidePanel;
     private Label statusLabel;
     private Label turnLabel;
@@ -40,11 +39,9 @@ public class GameController {
         this.rootLayout = new BorderPane();
         this.players = new ArrayList<>();
 
-        // Initialize Board
         gameBoard = new Board();
         rootLayout.setCenter(gameBoard.getBoardGroup());
 
-        // Initialize Side Panel
         createSidePanel();
         rootLayout.setRight(sidePanel);
 
@@ -55,10 +52,8 @@ public class GameController {
         primaryStage.setResizable(true);
         primaryStage.show();
         
-        // Ensure the board resizes with the window
         setupResizeListeners(scene);
-        
-        // Start Game Setup
+    
         setupGame();
     }
     
@@ -78,8 +73,7 @@ public class GameController {
         statusLabel = new Label("Welcome!");
         statusLabel.setWrapText(true);
         statusLabel.setFont(Font.font("Arial", 14));
-        
-        // Initialize Dice with callback
+    
         dice = new Dice(this::handleRoll);
         dice.setRollingDisable(true); // Disabled until game starts
         
@@ -87,7 +81,6 @@ public class GameController {
     }
 
     private void setupGame() {
-        // Simple input for now - can be expanded to a custom dialog
         TextInputDialog dialog = new TextInputDialog("2");
         dialog.setTitle("Game Setup");
         dialog.setHeaderText("Welcome to Snake & Ladder");
@@ -105,7 +98,6 @@ public class GameController {
                 initializePlayers(2); // Default
             }
         } else {
-             // User cancelled, maybe exit or default
              initializePlayers(2);
         }
     }
@@ -131,7 +123,6 @@ public class GameController {
     private void placePlayerAt(Player p, int position) {
         p.setPosition(position);
         var point = gameBoard.getCenterMoveCoordinates(position);
-        // Add small offset based on player ID to avoid total overlap
         double offset = (p.getToken().getRadius() * 0.5) * (players.indexOf(p) % 3);
         p.placeAt(point.x + offset, point.y + offset);
     }
@@ -167,8 +158,6 @@ public class GameController {
     
     private void checkTileEvents(Player player) {
         int pos = player.getPosition();
-        
-        // Check Snake
         int snakeTail = gameBoard.getSnakeTail(pos);
         if (snakeTail != -1) {
             statusLabel.setText("Oh no! " + player.getName() + " bitten by a snake!");
@@ -176,7 +165,6 @@ public class GameController {
             return; // Turn ends after slide
         }
         
-        // Check Ladder
         int ladderTop = gameBoard.getLadderTop(pos);
         if (ladderTop != -1) {
             statusLabel.setText("Yay! " + player.getName() + " climbed a ladder!");
@@ -199,13 +187,12 @@ public class GameController {
         var point = gameBoard.getCenterMoveCoordinates(targetPos);
         double offset = (player.getToken().getRadius() * 0.5) * (players.indexOf(player) % 3);
         
-        // Small delay before sliding/climbing
+
         var pause = new javafx.animation.PauseTransition(javafx.util.Duration.millis(500));
         pause.setOnFinished(e -> {
              player.animateMove(point.x + offset, point.y + offset, () -> {
                 player.setPosition(targetPos);
-                
-                // Check win condition again just in case (Ladder to 100)
+        
                 if (targetPos == 100) {
                     gameRunning = false;
                     statusLabel.setText("WINNER: " + player.getName());
@@ -243,9 +230,8 @@ public class GameController {
     private void setupResizeListeners(Scene scene) {
         scene.widthProperty().addListener((obs, oldVal, newVal) -> {
             if (gameBoard != null) {
-                // Adjust board size (keeping 250px for side panel)
                 gameBoard.resizeBoard(newVal.doubleValue() - 250, scene.getHeight());
-                // Re-position players
+               
                 refreshPlayerPositions();
             }
         });
