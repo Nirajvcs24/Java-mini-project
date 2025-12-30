@@ -46,10 +46,6 @@ public class Player {
     // Move animation to a specific X, Y coordinate
     public void animateMove(double x, double y, Runnable onFinished) {
         TranslateTransition tt = new TranslateTransition(Duration.millis(300), token);
-        // We need to set 'To' positions relative to the token's Parent (Group)
-        // However, TranslateTransition works on translation delta or absolutes if node is at 0,0
-        // It's safer if the token is managed by the Board or Controller which sets layoutX/Y.
-        // But if we use setTranslateX/Y, we can animate those.
         
         tt.setToX(x);
         tt.setToY(y);
