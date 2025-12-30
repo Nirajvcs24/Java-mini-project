@@ -17,7 +17,6 @@ public class Tile extends StackPane {
         this.number = number;
         
         border = new Rectangle(size, size);
-        // Checkerboard effect logic or custom colors can go here
         Color color = (number % 2 == 0) ? Color.LIGHTYELLOW : Color.LIGHTCYAN;
         border.setFill(color);
         border.setStroke(Color.BLACK);
@@ -26,8 +25,7 @@ public class Tile extends StackPane {
         text.setFont(Font.font("Arial", FontWeight.BOLD, 14));
 
         getChildren().addAll(border, text);
-        
-        // Initial position will be set by the Board class
+
     }
 
     public void updateSize(double newSize) {
