@@ -19,7 +19,6 @@ public class Board {
     private double width;
     private double height;
     
-    // Logic for Snakes and Ladders
     private Map<Integer, Integer> snakes;
     private Map<Integer, Integer> ladders;
     private Group slElementsGroup; // Group to hold graphical lines for snakes/ladders
@@ -32,9 +31,7 @@ public class Board {
         initializeSnakesAndLadders();
         createGrid();
         
-        // Add layers: Tiles at bottom, then Snakes/Ladders on top
         boardGroup.getChildren().addAll(slElementsGroup); 
-        // Note: Tiles are added directly to boardGroup in createGrid, so we need to manage order
     }
     
     public Group getBoardGroup() {
@@ -63,8 +60,6 @@ public class Board {
         snakes = new HashMap<>();
         ladders = new HashMap<>();
         
-        // Classic positions (Simplified for now)
-        // Snakes (Start -> End, where End < Start)
         snakes.put(16, 6);
         snakes.put(47, 26);
         snakes.put(49, 11);
@@ -76,7 +71,6 @@ public class Board {
         snakes.put(95, 75);
         snakes.put(98, 78);
 
-        // Ladders (Start -> End, where End > Start)
         ladders.put(1, 38);
         ladders.put(4, 14);
         ladders.put(9, 31);
@@ -105,7 +99,6 @@ public class Board {
     private void drawSnakesAndLadders() {
         slElementsGroup.getChildren().clear();
         
-        // Draw Ladders (Green with rungs)
         ladders.forEach((start, end) -> {
             Point p1 = getCenterMoveCoordinates(start);
             Point p2 = getCenterMoveCoordinates(end);
@@ -119,8 +112,7 @@ public class Board {
             double nx = -dy / length;
             double ny = dx / length;
             double width = 10;
-            
-            // Side rails
+        
             Line leftRail = new Line(p1.x - nx*width, p1.y - ny*width, p2.x - nx*width, p2.y - ny*width);
             Line rightRail = new Line(p1.x + nx*width, p1.y + ny*width, p2.x + nx*width, p2.y + ny*width);
             
@@ -144,7 +136,6 @@ public class Board {
             }
         });
 
-        // Draw Snakes (Red Curves)
         snakes.forEach((start, end) -> {
             Point p1 = getCenterMoveCoordinates(start); // Head
             Point p2 = getCenterMoveCoordinates(end);   // Tail
@@ -155,15 +146,11 @@ public class Board {
             curve.setEndX(p2.x);
             curve.setEndY(p2.y);
             
-            // Control point: midpoint + offset to make it curvy
             double midX = (p1.x + p2.x) / 2;
             double midY = (p1.y + p2.y) / 2;
             
-            // Randomish offset for variety or fixed based on direction
-            // Simple approach: Curve out perpendicular to the line connecting them
             double dx = p2.x - p1.x;
             double dy = p2.y - p1.y;
-            // Perpendicular
             curve.setControlX(midX + dy * 0.3); 
             curve.setControlY(midY - dx * 0.3);
             
@@ -172,20 +159,18 @@ public class Board {
             curve.setFill(null);
             curve.setStrokeLineCap(StrokeLineCap.ROUND);
             
-            // Head (Circle for now)
+           
             javafx.scene.shape.Circle head = new javafx.scene.shape.Circle(p1.x, p1.y, 6, Color.DARKRED);
             
             slElementsGroup.getChildren().addAll(curve, head);
         });
     }
 
-    // Helper class for coordinates
     public static class Point {
         public double x, y;
         public Point(double x, double y) { this.x = x; this.y = y; }
     }
     
-    // Calculates top-left corner of the tile for placement
     private Point getCoordinatesForNumber(int number) {
         int row = (number - 1) / ROWS; 
         // visual row 0 is top, grid row 0 is bottom (1-10)
@@ -204,7 +189,6 @@ public class Board {
         return new Point(col * tileSize, viewRow * tileSize);
     }
 
-    // Calculates center of the tile for pieces/lines
     public Point getCenterMoveCoordinates(int number) {
         Point p = getCoordinatesForNumber(number);
         return new Point(p.x + tileSize/2, p.y + tileSize/2);
@@ -214,17 +198,14 @@ public class Board {
         return tileSize;
     }
 
-    // Called by Controller when window resizes
     public void resizeBoard(double width, double height) {
         this.width = width;
         this.height = height;
         
-        // Keep square aspect ratio or fill? 
-        // Let's fill 80% of the smallest dimension to leave room for UI
         double minDim = Math.min(width, height);
         this.tileSize = (minDim * 0.9) / ROWS;
         
-        // Center the board
+        
         double startX = (width - (tileSize * COLS)) / 2;
         double startY = (height - (tileSize * ROWS)) / 2;
         
@@ -234,7 +215,6 @@ public class Board {
         drawBoard();
     }
     
-    // Methods for game logic to query board
     public int getSnakeTail(int head) {
         return snakes.getOrDefault(head, -1);
     }
